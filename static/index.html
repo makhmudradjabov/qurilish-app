@@ -4,7 +4,8 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
 <title>Qurilish daftari</title>
-<link rel="manifest" href="/assets/manifest.json" />
+<link rel="manifest" href="/static/manifest.json">
+<meta name="theme-color" content="#10243D">
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=Inter:wght@400;500;600&display=swap');
   * { box-sizing: border-box; }
@@ -541,5 +542,14 @@ function bindHisobot() {
   refreshLoop();
 })();
 </script>
+
+<script>
+if ("serviceWorker" in navigator) {
+    window.addEventListener("load", function () {
+        navigator.serviceWorker.register("/static/sw.js");
+    });
+}
+</script>
+
 </body>
 </html>
