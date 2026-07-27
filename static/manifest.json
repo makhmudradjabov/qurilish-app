@@ -1,0 +1,9 @@
+{
+  "name": "Qurilish daftari",
+  "short_name": "Qurilish",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#10243D",
+  "theme_color": "#10243D",
+  "icons": []
+}

@@ -1,0 +1,545 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+<title>Qurilish daftari</title>
+<link rel="manifest" href="/assets/manifest.json" />
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=Inter:wght@400;500;600&display=swap');
+  * { box-sizing: border-box; }
+  body { margin: 0; font-family: 'Inter', sans-serif; background: #F7F4EE; color: #17202B; }
+  input, select, button { font-family: 'Inter', sans-serif; }
+  button { cursor: pointer; }
+  #app { max-width: 480px; margin: 0 auto; min-height: 100vh; padding-bottom: 78px; position: relative; }
+
+  /* --- login --- */
+  .gate { min-height: 100vh; background: #10243D; display: flex; align-items: center; justify-content: center; padding: 20px; }
+  .gate-box { background: #F7F4EE; border-radius: 16px; padding: 22px; max-width: 360px; width: 100%; }
+  .eyebrow { font-family: 'Barlow Condensed', sans-serif; font-size: 12px; letter-spacing: 2px; color: #E8720C; font-weight: 600; }
+  .gate-title { font-family: 'Barlow Condensed', sans-serif; font-size: 24px; font-weight: 700; color: #10243D; margin-top: 4px; }
+  .gate-sub { font-size: 13px; color: #6B6459; margin-top: 8px; line-height: 1.5; }
+  .user-btn { width: 100%; text-align: left; background: #fff; border: 1px solid #E2DCCF; border-radius: 10px; padding: 13px 14px; font-size: 15px; font-weight: 600; color: #10243D; margin-bottom: 8px; }
+  .login-err { color: #B84327; font-size: 12.5px; margin-top: 8px; text-align: center; font-weight: 600; }
+
+  /* --- header --- */
+  .header { background: #10243D; padding: 22px 18px 20px; position: relative; overflow: hidden; }
+  .header-grid { position: absolute; inset: 0; background-image: linear-gradient(rgba(255,255,255,0.06) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.06) 1px, transparent 1px); background-size: 18px 18px; }
+  .header-row { position: relative; display: flex; justify-content: space-between; align-items: flex-start; }
+  .header-title { font-family: 'Barlow Condensed', sans-serif; font-size: 28px; font-weight: 700; color: #fff; margin-top: 2px; }
+  .badge { background: rgba(232,114,12,0.15); border: 1px solid #E8720C; color: #E8720C; font-size: 11px; font-weight: 600; padding: 4px 10px; border-radius: 20px; margin-top: 4px; display: inline-block; }
+  .who { font-size: 10px; color: #9FB0C3; margin-top: 5px; cursor: pointer; }
+  .total-row { position: relative; margin-top: 16px; display: flex; justify-content: space-between; align-items: baseline; border-top: 1px solid rgba(255,255,255,0.15); padding-top: 12px; }
+  .total-label { font-size: 12px; color: #9FB0C3; }
+  .total-value { font-family: ui-monospace, monospace; font-size: 19px; font-weight: 600; color: #fff; }
+
+  .content { padding: 16px 14px; }
+  .card { background: #fff; border-radius: 14px; padding: 14px; margin-bottom: 14px; border: 1px solid #EAE4D8; }
+  .card-title { font-family: 'Barlow Condensed', sans-serif; font-size: 17px; font-weight: 700; margin-bottom: 10px; color: #10243D; }
+  label.field-label { font-size: 11px; color: #8A8272; font-weight: 600; margin-bottom: 4px; display: block; margin-top: 10px; }
+  .input { width: 100%; border: 1px solid #E2DCCF; border-radius: 10px; padding: 10px 12px; font-size: 15px; margin-bottom: 4px; background: #FBFAF7; color: #17202B; }
+  .chip-row { display: flex; flex-wrap: wrap; gap: 6px; margin: 4px 0 6px; }
+  .chip { border: none; border-radius: 20px; padding: 7px 12px; font-size: 12.5px; font-weight: 600; background: #EFEAE1; color: #4A4438; }
+  .chip.active { color: #fff; }
+  .btn-primary { width: 100%; background: #E8720C; color: #fff; border: none; border-radius: 10px; padding: 12px; font-size: 15px; font-weight: 600; margin-top: 12px; }
+  .btn-secondary { background: #EFEAE1; color: #4A4438; border: none; border-radius: 10px; padding: 12px; font-size: 14px; font-weight: 600; }
+  .btn-danger { background: #FBE9E4; color: #B84327; border: 1px solid #F1C4B4; border-radius: 10px; padding: 12px 16px; font-size: 14px; font-weight: 600; }
+  .btn-dashed { width: 100%; background: transparent; border: 2px dashed #C9C0AE; color: #8A8272; border-radius: 12px; padding: 14px; font-size: 14px; font-weight: 600; margin-bottom: 16px; }
+  .back-btn { background: none; border: none; color: #10243D; font-size: 14px; font-weight: 600; padding: 0; margin-bottom: 12px; }
+  .section-header { font-family: 'Barlow Condensed', sans-serif; font-size: 16px; font-weight: 700; color: #10243D; margin: 18px 2px 8px; display: flex; justify-content: space-between; align-items: baseline; }
+  .section-header .amt { font-family: ui-monospace, monospace; font-size: 14px; font-weight: 600; color: #E8720C; }
+  .empty { text-align: center; color: #A69E8D; font-size: 13px; padding: 20px 0; }
+  .warn { background: #FBE9E4; border: 1px solid #F1C4B4; color: #B84327; border-radius: 10px; padding: 10px 12px; font-size: 12.5px; margin-bottom: 14px; }
+
+  .exp-row { display: flex; align-items: center; gap: 10px; padding: 9px 0; border-bottom: 1px solid #F1EDE3; }
+  .exp-cat { font-size: 12.5px; font-weight: 600; color: #4A4438; display: flex; align-items: center; gap: 6px; }
+  .dot { width: 8px; height: 8px; border-radius: 8px; display: inline-block; }
+  .exp-note { font-size: 12px; color: #A69E8D; margin-top: 2px; }
+  .exp-amount { font-family: ui-monospace, monospace; font-size: 14.5px; font-weight: 600; white-space: nowrap; }
+  .owner-tag { font-size: 10px; font-weight: 600; color: #8A8272; background: #EFEAE1; border-radius: 10px; padding: 1px 7px; margin-left: 4px; }
+  .del-btn { background: none; border: none; color: #C9C0AE; font-size: 13px; }
+  .lock { font-size: 13px; opacity: 0.5; }
+  .confirm-yn { display: flex; gap: 4px; align-items: center; font-size: 11px; }
+  .confirm-yn button { border: none; border-radius: 6px; font-size: 11px; padding: 4px 8px; font-weight: 600; }
+  .yes-btn { background: #B84327; color: #fff; }
+  .no-btn { background: #EFEAE1; color: #4A4438; }
+
+  .house-card { width: 100%; display: flex; align-items: center; background: #fff; border: 1px solid #EAE4D8; border-radius: 12px; padding: 14px; margin-bottom: 10px; text-align: left; }
+  .house-name { font-family: 'Barlow Condensed', sans-serif; font-size: 18px; font-weight: 700; color: #10243D; }
+  .house-meta { font-size: 12px; color: #A69E8D; margin-top: 2px; }
+  .house-total { font-family: ui-monospace, monospace; font-size: 16px; font-weight: 700; color: #E8720C; }
+  .house-hero { background: #10243D; border-radius: 14px; padding: 18px 16px; margin-bottom: 14px; }
+  .house-hero-name { font-family: 'Barlow Condensed', sans-serif; font-size: 22px; font-weight: 700; color: #fff; }
+  .house-hero-total { font-family: ui-monospace, monospace; font-size: 26px; font-weight: 700; color: #E8720C; margin-top: 4px; }
+  .house-hero-meta { font-size: 12px; color: #9FB0C3; margin-top: 6px; }
+
+  .ledger-row { display: flex; align-items: center; gap: 8px; padding: 8px 0; border-bottom: 1px dotted #E2DCCF; font-size: 13.5px; }
+  .ledger-dots { flex: 1; border-bottom: 1px dotted #D8D0BF; height: 1px; margin-bottom: 4px; }
+  .ledger-amount { font-family: ui-monospace, monospace; font-weight: 600; }
+  .report-total { background: #10243D; border-radius: 14px; padding: 18px 16px; margin-bottom: 6px; text-align: center; }
+  .report-total .lbl { font-size: 12px; color: #9FB0C3; }
+  .report-total .val { font-family: ui-monospace, monospace; font-size: 28px; font-weight: 700; color: #fff; margin-top: 4px; }
+  .report-total .meta { font-size: 11px; color: #9FB0C3; margin-top: 4px; }
+
+  .toast { position: fixed; bottom: 90px; left: 50%; transform: translateX(-50%); background: #17202B; color: #fff; padding: 9px 16px; border-radius: 20px; font-size: 13px; z-index: 50; }
+  .tabbar { position: fixed; bottom: 0; left: 50%; transform: translateX(-50%); width: 100%; max-width: 480px; background: #fff; border-top: 1px solid #EAE4D8; display: flex; padding: 8px 0 10px; }
+  .tab-btn { flex: 1; background: none; border: none; display: flex; flex-direction: column; align-items: center; color: #8A94A0; }
+  .tab-btn.active { color: #E8720C; }
+  .tab-btn .icon { font-size: 20px; }
+  .tab-btn .lbl { font-size: 11px; font-weight: 600; margin-top: 2px; }
+  .view-only-note { font-size: 12.5px; color: #8A8272; background: #EFEAE1; border-radius: 10px; padding: 10px 12px; margin-bottom: 16px; }
+</style>
+</head>
+<body>
+<div id="app"></div>
+<script>
+const API = "";
+const CATEGORIES = ["Qurilish materiali", "Ishchi haqi", "Transport", "Texnika ijarasi", "Boshqa"];
+const CAT_COLORS = {
+  "Qurilish materiali": "#E8720C", "Ishchi haqi": "#3C6E9A", "Transport": "#4C8C6B",
+  "Texnika ijarasi": "#9A5B3C", "Boshqa": "#6B6459"
+};
+const MONTHS_UZ = ["Yanvar","Fevral","Mart","Aprel","May","Iyun","Iyul","Avgust","Sentyabr","Oktyabr","Noyabr","Dekabr"];
+const USER_NAMES = ["Temur", "Suhrob", "Kamoladdin", "Siroj"];
+
+let state = {
+  token: localStorage.getItem("qd-token") || null,
+  me: null,
+  houses: [],
+  expenses: [],
+  tab: "bugun",
+  activeHouseId: null,
+  toast: "",
+};
+
+function fmt(n) { return Math.round(Number(n) || 0).toLocaleString("ru-RU").replace(/,/g, " "); }
+function todayStr() { return new Date().toISOString().slice(0, 10); }
+function fmtDate(d) { const x = new Date(d + "T00:00:00"); return `${x.getDate()} ${MONTHS_UZ[x.getMonth()]}`; }
+function fmtDateFull(d) { const x = new Date(d + "T00:00:00"); return `${x.getDate()} ${MONTHS_UZ[x.getMonth()]} ${x.getFullYear()}`; }
+
+async function api(path, opts = {}) {
+  const headers = opts.headers || {};
+  if (state.token) headers["Authorization"] = "Bearer " + state.token;
+  if (opts.body) headers["Content-Type"] = "application/json";
+  const res = await fetch(API + path, { ...opts, headers });
+  if (res.status === 401) { logout(); throw new Error("unauthorized"); }
+  if (!res.ok) { const t = await res.text(); throw new Error(t); }
+  return res.status === 204 ? null : res.json();
+}
+
+async function login(name, password) {
+  try {
+    const r = await api("/api/login", { method: "POST", body: JSON.stringify({ name, password }) });
+    state.token = r.token;
+    state.me = { name: r.name, role: r.role };
+    localStorage.setItem("qd-token", r.token);
+    await loadAll();
+    render();
+    return true;
+  } catch (e) {
+    return false;
+  }
+}
+
+function logout() {
+  state.token = null; state.me = null; state.houses = []; state.expenses = [];
+  localStorage.removeItem("qd-token");
+  render();
+}
+
+async function loadAll() {
+  const [houses, expenses] = await Promise.all([api("/api/houses"), api("/api/expenses")]);
+  state.houses = houses.map(h => ({ id: h.id, name: h.name, startDate: h.start_date, endDate: h.end_date, status: h.status, createdBy: h.created_by }));
+  state.expenses = expenses.map(e => ({ id: e.id, houseId: e.house_id, date: e.date, category: e.category, amount: e.amount, note: e.note, addedBy: e.added_by }));
+}
+
+function showToast(msg) { state.toast = msg; render(); setTimeout(() => { state.toast = ""; renderToastOnly(); }, 1800); }
+function renderToastOnly() { const t = document.getElementById("toast"); if (t) t.remove(); }
+
+async function refreshLoop() {
+  setInterval(async () => {
+    if (!state.token) return;
+    const active = document.activeElement;
+    if (active && ["INPUT", "SELECT", "TEXTAREA"].includes(active.tagName)) return;
+    try { await loadAll(); render(); } catch (e) {}
+  }, 8000);
+}
+
+// ---------------- render ----------------
+function render() {
+  const app = document.getElementById("app");
+  if (!state.token || !state.me) { app.innerHTML = renderLogin(); bindLogin(); return; }
+
+  const isAdmin = state.me.role === "admin";
+  const totalLabel = isAdmin ? "Jami sarflangan (hammasi)" : "Sizning xarajatingiz";
+  const grandTotal = state.expenses.reduce((s, e) => s + Number(e.amount), 0);
+  const activeCount = state.houses.filter(h => h.status === "faol").length;
+
+  let body = "";
+  if (state.tab === "bugun") body = renderBugun(isAdmin);
+  else if (state.tab === "uylar" && !state.activeHouseId) body = renderUylar();
+  else if (state.tab === "uylar" && state.activeHouseId) body = renderHouseDetail(isAdmin);
+  else if (state.tab === "hisobot") body = renderHisobot();
+
+  app.innerHTML = `
+    <div class="header">
+      <div class="header-grid"></div>
+      <div class="header-row">
+        <div>
+          <div class="eyebrow">QURILISH DAFTARI</div>
+          <div class="header-title">Xarajatlar hisobi</div>
+        </div>
+        <div style="text-align:right">
+          <div class="badge">${activeCount} faol</div>
+          <div class="who" id="logout-trigger">👤 ${state.me.name} ${isAdmin ? "(admin)" : ""} <span style="opacity:.6">· chiqish</span></div>
+        </div>
+      </div>
+      <div class="total-row">
+        <span class="total-label">${totalLabel}</span>
+        <span class="total-value">${fmt(grandTotal)} so'm</span>
+      </div>
+    </div>
+    <div class="content">
+      ${body}
+    </div>
+    ${state.toast ? `<div class="toast" id="toast">${state.toast}</div>` : ""}
+    <nav class="tabbar">
+      <button class="tab-btn ${state.tab === "bugun" ? "active" : ""}" data-tab="bugun"><div class="icon">📝</div><div class="lbl">Bugun</div></button>
+      <button class="tab-btn ${state.tab === "uylar" ? "active" : ""}" data-tab="uylar"><div class="icon">🏠</div><div class="lbl">Uylar</div></button>
+      <button class="tab-btn ${state.tab === "hisobot" ? "active" : ""}" data-tab="hisobot"><div class="icon">📊</div><div class="lbl">Hisobot</div></button>
+    </nav>
+  `;
+  bindCommon();
+  if (state.tab === "bugun") bindBugun();
+  if (state.tab === "uylar" && !state.activeHouseId) bindUylar();
+  if (state.tab === "uylar" && state.activeHouseId) bindHouseDetail(isAdmin);
+  if (state.tab === "hisobot") bindHisobot();
+}
+
+function bindCommon() {
+  document.getElementById("logout-trigger").onclick = () => {
+    if (confirm("Chiqishni tasdiqlaysizmi?")) logout();
+  };
+  document.querySelectorAll(".tab-btn").forEach(b => {
+    b.onclick = () => { state.tab = b.dataset.tab; state.activeHouseId = null; render(); };
+  });
+}
+
+// ---------- login ----------
+function renderLogin() {
+  return `
+    <div class="gate">
+      <div class="gate-box">
+        <div class="eyebrow">QURILISH DAFTARI</div>
+        <div id="login-inner"></div>
+      </div>
+    </div>`;
+}
+let loginSelected = null;
+function bindLogin() {
+  renderLoginInner();
+}
+function renderLoginInner() {
+  const el = document.getElementById("login-inner");
+  if (!loginSelected) {
+    el.innerHTML = `
+      <div class="gate-title">Kim kiryapti?</div>
+      <div class="gate-sub">Ismingizni tanlang va sizga berilgan kodni kiriting.</div>
+      <div style="margin-top:16px">
+        ${USER_NAMES.map(n => `<button class="user-btn" data-name="${n}">${n}</button>`).join("")}
+      </div>`;
+    el.querySelectorAll(".user-btn").forEach(b => b.onclick = () => { loginSelected = b.dataset.name; renderLoginInner(); });
+  } else {
+    el.innerHTML = `
+      <div class="gate-title">${loginSelected}</div>
+      <div class="gate-sub">Kodingizni kiriting.</div>
+      <input id="pw-input" class="input" style="margin-top:16px;font-family:ui-monospace,monospace;font-size:18px;letter-spacing:4px;text-align:center" type="password" inputmode="numeric" placeholder="****" autofocus />
+      <div id="login-err"></div>
+      <button class="btn-primary" id="login-submit">Kirish</button>
+      <button class="btn-secondary" style="width:100%;margin-top:8px" id="login-back">← Boshqa odam</button>
+    `;
+    const pw = document.getElementById("pw-input");
+    pw.focus();
+    document.getElementById("login-submit").onclick = doLogin;
+    pw.onkeydown = (e) => { if (e.key === "Enter") doLogin(); };
+    document.getElementById("login-back").onclick = () => { loginSelected = null; renderLoginInner(); };
+  }
+}
+async function doLogin() {
+  const pw = document.getElementById("pw-input").value;
+  const ok = await login(loginSelected, pw);
+  if (!ok) {
+    document.getElementById("login-err").innerHTML = `<div class="login-err">Kod noto'g'ri. Qaytadan urinib ko'ring.</div>`;
+    document.getElementById("pw-input").value = "";
+  }
+}
+
+// ---------- bugun ----------
+let bugunState = { houseId: null, amount: "", category: CATEGORIES[0], note: "" };
+function renderBugun(isAdmin) {
+  const activeHouses = state.houses.filter(h => h.status === "faol");
+  if (!bugunState.houseId && activeHouses[0]) bugunState.houseId = activeHouses[0].id;
+  const today = todayStr();
+  const todayExpenses = state.expenses.filter(e => e.date === today);
+  const todayTotal = todayExpenses.reduce((s, e) => s + Number(e.amount), 0);
+
+  if (activeHouses.length === 0) {
+    return `
+      <div class="card">
+        <div class="card-title">Boshlash uchun avval loyiha (uy) qo'shing</div>
+        <input class="input" id="new-house-name-bugun" placeholder="Masalan: Chilonzor uyi" />
+        <button class="btn-primary" id="add-house-bugun">+ Loyiha qo'shish</button>
+      </div>`;
+  }
+
+  return `
+    <div class="card">
+      <div class="card-title">Yangi xarajat</div>
+      <label class="field-label">Qaysi uy</label>
+      <select class="input" id="exp-house">
+        ${activeHouses.map(h => `<option value="${h.id}" ${h.id === bugunState.houseId ? "selected" : ""}>${h.name}</option>`).join("")}
+      </select>
+      <label class="field-label">Summa (so'm)</label>
+      <input class="input" id="exp-amount" type="number" inputmode="numeric" placeholder="0" style="font-family:ui-monospace,monospace;font-size:18px" value="${bugunState.amount}" />
+      <label class="field-label">Turkumi</label>
+      <div class="chip-row" id="exp-cats">
+        ${CATEGORIES.map(c => `<button class="chip ${c === bugunState.category ? "active" : ""}" data-cat="${c}" style="background:${c === bugunState.category ? CAT_COLORS[c] : "#EFEAE1"}">${c}</button>`).join("")}
+      </div>
+      <label class="field-label">Izoh (ixtiyoriy)</label>
+      <input class="input" id="exp-note" placeholder="masalan: 50 qop sement" value="${bugunState.note}" />
+      <button class="btn-primary" id="exp-submit">+ Qo'shish</button>
+    </div>
+    <div class="section-header"><span>Bugungi xarajatlar — ${fmtDateFull(today)}</span><span class="amt">${fmt(todayTotal)} so'm</span></div>
+    ${todayExpenses.length === 0 ? `<div class="empty">Bugun hali xarajat kiritilmagan.</div>` :
+      `<div class="card">${todayExpenses.map(e => expRowHtml(e, state.houses.find(h => h.id === e.houseId)?.name, isAdmin)).join("")}</div>`}
+  `;
+}
+function bindBugun() {
+  const activeHouses = state.houses.filter(h => h.status === "faol");
+  if (activeHouses.length === 0) {
+    const btn = document.getElementById("add-house-bugun");
+    if (btn) btn.onclick = async () => {
+      const v = document.getElementById("new-house-name-bugun").value.trim();
+      if (!v) return;
+      await api("/api/houses", { method: "POST", body: JSON.stringify({ name: v }) });
+      await loadAll(); showToast("Yangi loyiha qo'shildi"); render();
+    };
+    return;
+  }
+  document.getElementById("exp-house").onchange = (e) => { bugunState.houseId = e.target.value; };
+  document.getElementById("exp-amount").oninput = (e) => { bugunState.amount = e.target.value; };
+  document.getElementById("exp-note").oninput = (e) => { bugunState.note = e.target.value; };
+  document.querySelectorAll("#exp-cats .chip").forEach(b => {
+    b.onclick = () => { bugunState.category = b.dataset.cat; render(); };
+  });
+  document.getElementById("exp-submit").onclick = async () => {
+    const amount = Number(bugunState.amount);
+    if (!bugunState.houseId || !amount || amount <= 0) return;
+    await api("/api/expenses", { method: "POST", body: JSON.stringify({ houseId: bugunState.houseId, date: todayStr(), category: bugunState.category, amount, note: bugunState.note }) });
+    bugunState.amount = ""; bugunState.note = "";
+    await loadAll(); showToast("Xarajat qo'shildi"); render();
+  };
+  bindExpenseRows();
+}
+
+function expRowHtml(e, houseName, showOwner) {
+  return `
+    <div class="exp-row" data-id="${e.id}">
+      <div style="flex:1;min-width:0">
+        <div class="exp-cat"><span class="dot" style="background:${CAT_COLORS[e.category]}"></span>${e.category}
+          ${showOwner && e.addedBy !== state.me.name ? `<span class="owner-tag">${e.addedBy}</span>` : ""}
+        </div>
+        <div class="exp-note">${houseName ? houseName + (e.note ? " · " + e.note : "") : (e.note || "—")}</div>
+      </div>
+      <div class="exp-amount" data-role="amount">${fmt(e.amount)}</div>
+      ${e.addedBy === state.me.name
+        ? `<button class="del-btn" data-action="del">✕</button>`
+        : `<span class="lock">🔒</span>`}
+    </div>`;
+}
+function bindExpenseRows() {
+  document.querySelectorAll('.exp-row [data-action="del"]').forEach(btn => {
+    btn.onclick = () => {
+      const row = btn.closest(".exp-row");
+      const id = row.dataset.id;
+      row.querySelector('[data-role="amount"]').style.display = "none";
+      btn.outerHTML = `<div class="confirm-yn"><span>O'chirilsinmi?</span><button class="yes-btn" data-yes>Ha</button><button class="no-btn" data-no>Yo'q</button></div>`;
+      row.querySelector("[data-yes]").onclick = async () => {
+        await api("/api/expenses/" + id, { method: "DELETE" });
+        await loadAll(); showToast("Xarajat o'chirildi"); render();
+      };
+      row.querySelector("[data-no]").onclick = () => render();
+    };
+  });
+}
+
+// ---------- uylar ----------
+let uylarOpen = false;
+function renderUylar() {
+  const active = state.houses.filter(h => h.status === "faol");
+  const done = state.houses.filter(h => h.status === "tugallangan");
+  function houseTotal(id) { return state.expenses.filter(e => e.houseId === id).reduce((s, e) => s + Number(e.amount), 0); }
+  function cardHtml(h) {
+    return `<button class="house-card" data-open="${h.id}">
+      <div style="flex:1;text-align:left">
+        <div class="house-name">${h.name}</div>
+        <div class="house-meta">${h.status === "tugallangan" ? fmtDate(h.startDate) + " – " + fmtDate(h.endDate) : fmtDate(h.startDate) + " dan beri"}</div>
+      </div>
+      <div style="text-align:right"><div class="house-total">${fmt(houseTotal(h.id))}</div><div style="font-size:10px;color:#A69E8D">so'm</div></div>
+    </button>`;
+  }
+  return `
+    ${!uylarOpen ? `<button class="btn-dashed" id="open-add-house">+ Yangi uy / loyiha qo'shish</button>` :
+      `<div class="card">
+        <input class="input" id="new-house-name" placeholder="Loyiha nomi, masalan: Yunusobod 2-uy" />
+        <div style="display:flex;gap:8px">
+          <button class="btn-primary" id="save-house" style="flex:1">Saqlash</button>
+          <button class="btn-secondary" id="cancel-house">Bekor qilish</button>
+        </div>
+      </div>`}
+    ${active.length ? `<div class="section-header"><span>Faol loyihalar</span></div>${active.map(cardHtml).join("")}` : ""}
+    ${done.length ? `<div class="section-header"><span>Tugallangan uylar</span></div>${done.map(cardHtml).join("")}` : ""}
+    ${state.houses.length === 0 ? `<div class="empty">Hali loyiha qo'shilmagan.</div>` : ""}
+  `;
+}
+function bindUylar() {
+  const openBtn = document.getElementById("open-add-house");
+  if (openBtn) openBtn.onclick = () => { uylarOpen = true; render(); };
+  const cancelBtn = document.getElementById("cancel-house");
+  if (cancelBtn) cancelBtn.onclick = () => { uylarOpen = false; render(); };
+  const saveBtn = document.getElementById("save-house");
+  if (saveBtn) saveBtn.onclick = async () => {
+    const v = document.getElementById("new-house-name").value.trim();
+    if (!v) return;
+    await api("/api/houses", { method: "POST", body: JSON.stringify({ name: v }) });
+    uylarOpen = false;
+    await loadAll(); showToast("Yangi loyiha qo'shildi"); render();
+  };
+  document.querySelectorAll("[data-open]").forEach(b => {
+    b.onclick = () => { state.activeHouseId = b.dataset.open; render(); };
+  });
+}
+
+// ---------- house detail ----------
+let confirmDeleteHouse = false;
+function renderHouseDetail(isAdmin) {
+  const house = state.houses.find(h => h.id === state.activeHouseId);
+  if (!house) { state.activeHouseId = null; return renderUylar(); }
+  const expenses = state.expenses.filter(e => e.houseId === house.id).sort((a, b) => a.date < b.date ? 1 : -1);
+  const total = expenses.reduce((s, e) => s + Number(e.amount), 0);
+  const byMonth = {};
+  expenses.forEach(e => { const k = e.date.slice(0, 7); byMonth[k] = (byMonth[k] || 0) + Number(e.amount); });
+  const monthEntries = Object.entries(byMonth).sort((a, b) => a[0] < b[0] ? 1 : -1);
+
+  return `
+    <button class="back-btn" id="house-back">← Orqaga</button>
+    <div class="house-hero">
+      <div class="house-hero-name">${house.name}</div>
+      <div class="house-hero-total">${fmt(total)} so'm</div>
+      <div class="house-hero-meta">${house.status === "tugallangan" ? "Tugallandi: " + fmtDateFull(house.endDate) : "Boshlangan: " + fmtDateFull(house.startDate)} · ${house.createdBy} qo'shgan</div>
+    </div>
+    ${isAdmin ? `
+      <div style="display:flex;gap:8px;margin-bottom:16px">
+        ${house.status === "faol"
+          ? `<button class="btn-primary" style="flex:1;margin:0" id="finish-house">✓ Uyni tugatish</button>`
+          : `<button class="btn-secondary" style="flex:1" id="reopen-house">Qayta ochish</button>`}
+        ${!confirmDeleteHouse ? `<button class="btn-danger" id="del-house-trigger">🗑</button>` : ""}
+      </div>` : `<div class="view-only-note">🔒 Bu loyihani faqat admin (Temur) boshqaradi</div>`}
+    ${confirmDeleteHouse ? `
+      <div class="card">
+        <div style="margin-bottom:10px;font-weight:600">"${house.name}" va unga tegishli barcha xarajatlar o'chiriladi. Rostdanmi?</div>
+        <div style="display:flex;gap:8px">
+          <button class="btn-danger" style="flex:1" id="del-house-yes">Ha, o'chirish</button>
+          <button class="btn-secondary" style="flex:1" id="del-house-no">Bekor qilish</button>
+        </div>
+      </div>` : ""}
+    ${monthEntries.length ? `
+      <div class="section-header"><span>Oylar bo'yicha</span></div>
+      <div class="card">${monthEntries.map(([k, sum]) => {
+        const [y, m] = k.split("-");
+        return `<div class="ledger-row"><span>${MONTHS_UZ[Number(m) - 1]} ${y}</span><span class="ledger-dots"></span><span class="ledger-amount">${fmt(sum)}</span></div>`;
+      }).join("")}</div>` : ""}
+    <div class="section-header"><span>Xarajatlar (${expenses.length})</span></div>
+    ${expenses.length === 0 ? `<div class="empty">Bu uy uchun hali xarajat yo'q.</div>` :
+      `<div class="card">${expenses.map(e => expRowHtml(e, fmtDate(e.date), isAdmin)).join("")}</div>`}
+  `;
+}
+function bindHouseDetail(isAdmin) {
+  document.getElementById("house-back").onclick = () => { state.activeHouseId = null; confirmDeleteHouse = false; render(); };
+  const finishBtn = document.getElementById("finish-house");
+  if (finishBtn) finishBtn.onclick = async () => {
+    await api(`/api/houses/${state.activeHouseId}/finish`, { method: "POST" });
+    await loadAll(); showToast("Loyiha yakunlandi"); render();
+  };
+  const reopenBtn = document.getElementById("reopen-house");
+  if (reopenBtn) reopenBtn.onclick = async () => {
+    await api(`/api/houses/${state.activeHouseId}/reopen`, { method: "POST" });
+    await loadAll(); render();
+  };
+  const delTrigger = document.getElementById("del-house-trigger");
+  if (delTrigger) delTrigger.onclick = () => { confirmDeleteHouse = true; render(); };
+  const delYes = document.getElementById("del-house-yes");
+  if (delYes) delYes.onclick = async () => {
+    await api(`/api/houses/${state.activeHouseId}`, { method: "DELETE" });
+    confirmDeleteHouse = false; state.activeHouseId = null;
+    await loadAll(); showToast("Loyiha o'chirildi"); render();
+  };
+  const delNo = document.getElementById("del-house-no");
+  if (delNo) delNo.onclick = () => { confirmDeleteHouse = false; render(); };
+  bindExpenseRows();
+}
+
+// ---------- hisobot ----------
+let reportState = { mode: "oy", monthKey: new Date().toISOString().slice(0, 7), houseId: null, from: todayStr(), to: todayStr() };
+function renderHisobot() {
+  if (!reportState.houseId && state.houses[0]) reportState.houseId = state.houses[0].id;
+  let filtered = state.expenses;
+  if (reportState.mode === "oy") filtered = state.expenses.filter(e => e.date.slice(0, 7) === reportState.monthKey);
+  else if (reportState.mode === "uy") filtered = state.expenses.filter(e => e.houseId === reportState.houseId);
+  else if (reportState.mode === "oraliq") filtered = state.expenses.filter(e => e.date >= reportState.from && e.date <= reportState.to);
+
+  const total = filtered.reduce((s, e) => s + Number(e.amount), 0);
+  const byCat = {}; filtered.forEach(e => byCat[e.category] = (byCat[e.category] || 0) + Number(e.amount));
+  const byCatArr = Object.entries(byCat).sort((a, b) => b[1] - a[1]);
+  const byHouse = {}; filtered.forEach(e => { const h = state.houses.find(x => x.id === e.houseId); const n = h ? h.name : "Noma'lum"; byHouse[n] = (byHouse[n] || 0) + Number(e.amount); });
+  const byHouseArr = Object.entries(byHouse).sort((a, b) => b[1] - a[1]);
+
+  return `
+    <div class="chip-row">
+      <button class="chip ${reportState.mode === "oy" ? "active" : ""}" data-mode="oy" style="background:${reportState.mode === "oy" ? "#10243D" : "#EFEAE1"};color:${reportState.mode === "oy" ? "#fff" : "#4A4438"}">Oy bo'yicha</button>
+      <button class="chip ${reportState.mode === "uy" ? "active" : ""}" data-mode="uy" style="background:${reportState.mode === "uy" ? "#10243D" : "#EFEAE1"};color:${reportState.mode === "uy" ? "#fff" : "#4A4438"}">Uy bo'yicha</button>
+      <button class="chip ${reportState.mode === "oraliq" ? "active" : ""}" data-mode="oraliq" style="background:${reportState.mode === "oraliq" ? "#10243D" : "#EFEAE1"};color:${reportState.mode === "oraliq" ? "#fff" : "#4A4438"}">Sana oralig'i</button>
+    </div>
+    <div class="card">
+      ${reportState.mode === "oy" ? `<input class="input" type="month" id="r-month" value="${reportState.monthKey}" />` : ""}
+      ${reportState.mode === "uy" ? `<select class="input" id="r-house">${state.houses.map(h => `<option value="${h.id}" ${h.id === reportState.houseId ? "selected" : ""}>${h.name}</option>`).join("")}</select>` : ""}
+      ${reportState.mode === "oraliq" ? `<div style="display:flex;gap:8px"><input class="input" type="date" id="r-from" value="${reportState.from}" /><input class="input" type="date" id="r-to" value="${reportState.to}" /></div>` : ""}
+    </div>
+    <div class="report-total"><div class="lbl">Jami xarajat</div><div class="val">${fmt(total)} so'm</div><div class="meta">${filtered.length} ta yozuv</div></div>
+    ${byCatArr.length ? `<div class="section-header"><span>Turkumlar bo'yicha</span></div><div class="card">${byCatArr.map(([c, s]) => `<div class="ledger-row"><span class="dot" style="background:${CAT_COLORS[c]}"></span><span>${c}</span><span class="ledger-dots"></span><span class="ledger-amount">${fmt(s)}</span></div>`).join("")}</div>` : ""}
+    ${reportState.mode !== "uy" && byHouseArr.length ? `<div class="section-header"><span>Uylar bo'yicha</span></div><div class="card">${byHouseArr.map(([n, s]) => `<div class="ledger-row"><span>${n}</span><span class="ledger-dots"></span><span class="ledger-amount">${fmt(s)}</span></div>`).join("")}</div>` : ""}
+    ${filtered.length === 0 ? `<div class="empty">Bu davr uchun xarajat topilmadi.</div>` : ""}
+  `;
+}
+function bindHisobot() {
+  document.querySelectorAll("[data-mode]").forEach(b => b.onclick = () => { reportState.mode = b.dataset.mode; render(); });
+  const m = document.getElementById("r-month"); if (m) m.onchange = (e) => { reportState.monthKey = e.target.value; render(); };
+  const h = document.getElementById("r-house"); if (h) h.onchange = (e) => { reportState.houseId = e.target.value; render(); };
+  const f = document.getElementById("r-from"); if (f) f.onchange = (e) => { reportState.from = e.target.value; render(); };
+  const t = document.getElementById("r-to"); if (t) t.onchange = (e) => { reportState.to = e.target.value; render(); };
+}
+
+// ---------------- boshlash ----------------
+(async function start() {
+  if (state.token) {
+    try {
+      state.me = await api("/api/me");
+      await loadAll();
+    } catch (e) { state.token = null; state.me = null; }
+  }
+  render();
+  refreshLoop();
+})();
+</script>
+</body>
+</html>
